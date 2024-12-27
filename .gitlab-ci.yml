@@ -1,0 +1,26 @@
+image:
+  name:  "zh794390558/delta:1.14.0-ci-cpu-py3"
+
+before_script:
+  - echo "CI_PROJECT_DIR is ${CI_PROJECT_DIR}"
+  - whoami
+  - cat /etc/lsb-release
+  - env
+
+stages:
+  - build
+  - test
+
+lint_and_unit_test:
+  stage: test
+  tags:
+    - "delta-ci-runner"
+  only:
+    - "master"
+  script:
+    - env
+    - cd ${CI_PROJECT_DIR} && source env.sh
+    - pushd ${CI_PROJECT_DIR}/tools && make basic check_install test && popd
+    - bash tools/test/python_test.sh
+    - bash tools/test/cpp_test.sh
+    - bash tools/test/lint.sh
